@@ -1,0 +1,6 @@
+__pycache__/
+
+# macOS files
+.DS_Store
+
+sysmon.egg-info/
