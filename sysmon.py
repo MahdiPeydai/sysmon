@@ -3,6 +3,7 @@ import easycli
 from command.cpu import Cpu
 from command.memory import Memory
 from command.disk import Disk
+from command.network import Network
 
 __version__ = '0.0.1'
 
@@ -17,7 +18,8 @@ class Sysmon(easycli.Root):
         ),
         Cpu,
         Memory,
-        Disk
+        Disk,
+        Network
     ]
 
     def __call__(self, args):
