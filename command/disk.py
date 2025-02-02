@@ -37,7 +37,7 @@ class Disk(SubCommand):
             if input_output:
                 while True:
                     disk_input_output = psutil.disk_io_counters(perdisk=per_disk)
-                    data = {'input_output': disk_input_output, 'per_disk': per_disk}
+                    data = {'disk_input_output': disk_input_output, 'per_disk': per_disk}
                     DiskUsageResponse.success(data=data)
 
                     if not interval:
