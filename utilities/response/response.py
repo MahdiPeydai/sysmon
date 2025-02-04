@@ -16,6 +16,6 @@ class Response(ABC):
     # error response for command
     @staticmethod
     @abstractmethod
-    def error(message):
+    def error(message, code=2):
         print(message)
-        sys.exit(2)
+        sys.exit(code)
