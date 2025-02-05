@@ -7,7 +7,7 @@ from easycli import SubCommand, Argument
 from utilities.response.command.cpu import CpuUsageResponse
 
 
-# cpu usage subcommand
+# cpu usage monitoring subcommand
 class Cpu(SubCommand):
     __command__ = 'cpu'
     __arguments__ = [
@@ -27,13 +27,16 @@ class Cpu(SubCommand):
     ]
 
     def __call__(self, args):
-        interval = args.interval
         per_core = args.per_core
+        interval = args.interval
+        if interval and interval < 0: # validating interval argument
+            message = "Error: Interval must be a positive integer!"
+            MemoryUsageResponse.error(message=message, code=2)
         
         try:
             while True: # handling interval
                 cpu_usage = psutil.cpu_percent(interval=interval, percpu=per_core) # handle per core argument inline
-                data = {"cpu_usage": cpu_usage, "per_core": per_core} # parse data for response
+                data = {"cpu_usage": cpu_usage, "per_core": per_core} # composing data for response
                 CpuUsageResponse.success(data=data) # calling response class success method
 
                 if not interval:
