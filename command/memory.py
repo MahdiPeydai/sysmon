@@ -1,10 +1,8 @@
-import psutil
-import time
-import sys
-
 from easycli import SubCommand, Argument, Mutex
 
-from utilities.response.command.memory import MemoryUsageResponse
+from utilities.response.commands.memory import MemoryResponseHandler, SwapResponseHandler
+from utilities.dataFetcher.commands.memory import MemoryDataFetcher, SwapDataFetcher
+from utilities.monitoring.monitoring import Monitoring
 
 
 # memory usage monitoring command
@@ -35,40 +33,14 @@ class Memory(SubCommand):
         )
     ]
 
-    def __call__(self, args):
+    def __call__(self, args):        
         swap = args.swap
-        advance = args.advance
-        interval = args.interval
-        if interval and interval < 0: # validating interval argument
-            message = "Error: Interval must be a positive integer!"
-            MemoryUsageResponse.error(message=message, code=2)
 
-        try:
-            if swap: # handling swap usage monitoring
-                while True: # handling interval
-                    swap = psutil.swap_memory() # getting swap memory
-                    data = {'swap': swap} # composing data for response
-                    MemoryUsageResponse.success(data=data) # calling response class success method
+        if swap:
+            swap_monitor = Monitoring(data_fetcher=SwapDataFetcher, response_handler=SwapResponseHandler)
+            swap_monitor.monitor(args)
 
-                    if not interval:
-                        sys.exit(0)
-                    else:
-                        time.sleep(interval)
+        else:
+            memory_monitor = Monitoring(data_fetcher=MemoryDataFetcher, response_handler=MemoryResponseHandler)
+            memory_monitor.monitor(args)
 
-            else: # handling memory usage monitoring
-                while True:
-                    memory = psutil.virtual_memory() # geeting memory usage
-                    data = {'memory':memory, 'advance':advance} # handling advance argument
-                    MemoryUsageResponse.success(data=data)
-
-                    if not interval:
-                        sys.exit(0)
-                    else:
-                        time.sleep(interval)
-
-        except KeyboardInterrupt: 
-            message = ''
-            CpuUsageResponse.error(message=message, code=0) # calling response class error method
-
-        except Exception as e:
-            CpuUsageResponse.error(message=e)
